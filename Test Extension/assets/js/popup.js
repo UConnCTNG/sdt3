@@ -1,6 +1,7 @@
 const text = document.getElementById('notify-text')
 const notify = document.getElementById('send-button')
 const log = document.getElementById('show-log')
+const savedLog = document.getElementById('saved-log')
 //const counter = document.getElementById('notify-count')
 
 chrome.storage.local.get(['notifyCount'], data => {
@@ -18,8 +19,14 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 log.addEventListener('click', () => {
   // chrome.storage.local.clear()
   // text.value = ''
-  // console.log('test')
-  chrome.runtime.log('TEST')
+  // JSON.stringify(result)
+  chrome.storage.local.get('log', function(result) {
+    // alert('Value currently is ' + result);
+    savedLog.value = result.log
+  });
+
+  alert(text.value)
+
   chrome.runtime.sendMessage('', {
     type: 'notification',
     message: 'Update Successful!',
@@ -27,6 +34,10 @@ log.addEventListener('click', () => {
 })
 
 notify.addEventListener('click', () => {
+  chrome.storage.local.set({'log': text.value}, function() {
+    alert('Log successfully saved!');
+  });
+ 
   chrome.runtime.sendMessage('', {
     type: 'notification',
     message: 'Update Successful',

@@ -3,6 +3,7 @@ chrome.runtime.onMessage.addListener(data => {
   if (data.type === 'notification') {
     notify(data.message)
   }
+  console.log('log sent')
 })
 
 chrome.runtime.onInstalled.addListener(() => {
