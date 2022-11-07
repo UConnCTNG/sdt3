@@ -2,6 +2,7 @@ const text = document.getElementById('notify-text')
 const notify = document.getElementById('send-button')
 const log = document.getElementById('show-log')
 const savedLog = document.getElementById('saved-log')
+const clearLog = document.getElementById('clear-log')
 //const counter = document.getElementById('notify-count')
 
 chrome.storage.local.get(['notifyCount'], data => {
@@ -17,15 +18,9 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 })
 
 log.addEventListener('click', () => {
-  // chrome.storage.local.clear()
-  // text.value = ''
-  // JSON.stringify(result)
   chrome.storage.local.get('log', function(result) {
-    // alert('Value currently is ' + result);
     savedLog.value = result.log
   });
-
-  alert(text.value)
 
   chrome.runtime.sendMessage('', {
     type: 'notification',
@@ -44,12 +39,13 @@ notify.addEventListener('click', () => {
   })
 })
 
-// function readLogFile(filePath) {
-//   fetch(filePath).then(response => response.text())
-
-//   //if this works
-//   // chrome.runtime.sendMessage('', {
-//   //   type: 'notification',
-//   //   message: "Update Successful!",
-//   // })
-// }
+clearLog.addEventListener('click', () => {
+  chrome.storage.local.clear()
+  alert("Log cleared!")
+  savedLog.value = ""
+  
+  chrome.runtime.sendMessage('', {
+    type: 'notification',
+    message: 'Clear Successful',
+  })
+})
