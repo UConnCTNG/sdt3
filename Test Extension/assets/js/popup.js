@@ -6,52 +6,38 @@ const clearLog = document.getElementById('clear-log')
 //const counter = document.getElementById('notify-count')
 let fileHandle;
 
-async function getNewFileHandle() {
+async function saveFile(text) {
   
-   // For Chrome 86 and later...
-  const opts = {
-    types: [{
-      description: 'Text file',
-      accept: {'text/plain': ['.txt']},
-    }],
-    // writable: true, 
-    // mode: 'readwrite'
-  };
-  return await window.showOpenFilePicker();
-  
-}
+  // create a new handle
+  const newHandle = await window.showSaveFilePicker();
+  fileHandle = newHandle;
 
-async function writeFile(contents) {
-  
-  fileHandle = await getNewFileHandle()
+  // debug purposes
   chrome.runtime.sendMessage('', {
     type: 'notification',
     message: 'FileHandle created!',
   })
-  // Create a FileSystemWritableFileStream to write to.
-  const writable = await fileHandle.createWritable();
+
+  // create a FileSystemWritableFileStream to write to
+  const writableStream = await newHandle.createWritable();
+
   chrome.runtime.sendMessage('', {
     type: 'notification',
-    message: 'FileSystemWritableFileStream Created!',
+    message: 'WritableStream created!',
   })
-  // Write the contents of the file to the stream.
-  await writable.write(contents);
-  // Close the file and write the contents to disk.
-  await writable.close();
+
+  // these blobs are needed to write to the file
+  const blob = new Blob([text], {
+    type: "text/html",
+  });
+
+  // write our file
+  await writableStream.write(blob);
+
+  // close the file and write the contents to disk.
+  await writableStream.close();
 }
 
-// async function readFile(fileHandle) {
-//   // open file picker
-//   // [fileHandle] = await window.showOpenFilePicker(pickerOpts);
-
-//   // get file contents
-//   const [fileHandle] = await window.showOpenFilePicker(pickerOpts);
-//   // get file contents
-//   const fileData = await fileHandle.getFile();
-//   return fileData;
-
-  
-// }
 
 chrome.storage.local.get(['notifyCount'], data => {
   let value = data.notifyCount || 0
@@ -65,12 +51,20 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
   }
 })
 
-log.addEventListener('click', () => {
+log.addEventListener('click', async () => {
   chrome.storage.local.get('log', function(result) {
-    savedLog.value = result.log
+    //savedLog.value = result.log
   });
 
   //readFile(fileHandle)
+  // const fileData = await fileHandle.getFile();
+  // open file picker
+  [fileHandle] = await window.showOpenFilePicker();
+
+  // get file contents
+  const fileData = await fileHandle.getFile();
+  savedLog.value = typeof fileData // JSON.stringify(fileData);
+
 
   chrome.runtime.sendMessage('', {
     type: 'notification',
@@ -80,19 +74,19 @@ log.addEventListener('click', () => {
 
 notify.addEventListener('click', async () => {
   
-  writeFile(text.value).then(() => {
-      chrome.storage.local.set({'log': text.value}, function() {
-      alert('Log successfully saved!');
-    });
+  // writeFile(text.value).then(() => {
+  //     chrome.storage.local.set({'log': text.value}, function() {
+  //     alert('Log successfully saved!');
+  //   });
   
+    saveFile(text.value)
+
     chrome.runtime.sendMessage('', {
       type: 'notification',
       message: 'Update Successful',
     })
   })
 
-  
-})
 
 clearLog.addEventListener('click', () => {
   chrome.storage.local.clear()
