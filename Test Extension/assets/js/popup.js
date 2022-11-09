@@ -56,14 +56,13 @@ log.addEventListener('click', async () => {
     //savedLog.value = result.log
   });
 
-  //readFile(fileHandle)
-  // const fileData = await fileHandle.getFile();
   // open file picker
   [fileHandle] = await window.showOpenFilePicker();
 
   // get file contents
   const fileData = await fileHandle.getFile();
-  savedLog.value = typeof fileData // JSON.stringify(fileData);
+  contents = await fileData.text();
+  savedLog.value = contents // JSON.stringify(fileData);
 
 
   chrome.runtime.sendMessage('', {
@@ -73,12 +72,6 @@ log.addEventListener('click', async () => {
 })
 
 notify.addEventListener('click', async () => {
-  
-  // writeFile(text.value).then(() => {
-  //     chrome.storage.local.set({'log': text.value}, function() {
-  //     alert('Log successfully saved!');
-  //   });
-  
     saveFile(text.value)
 
     chrome.runtime.sendMessage('', {
