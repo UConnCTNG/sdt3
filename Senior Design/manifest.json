@@ -1,7 +1,0 @@
-{
-    "name": "Browser extension testshell",
-    "version": "0.0.0.1",
-    "manifest_version": 1,
-    "description": "An extension to provide the framework for the full application."
-
-}

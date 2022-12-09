@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="assets/css/popup.css">
+	</head>
+	<body>
+	 <div id="notify-wrapper">
+		<div id="notify-header">
+			<h1>CTNG Client>
+		</div>
+		<div id="notify-containers">
+			<div class="notify-form">
+				<label for="saved-log">Certificate obtained?:</label>
+				<textarea name="certificate-log" id="certificate-log" placeholder="<certificate goes here>" readonly></textarea>
+			</div>
+			<div class=notify-buttons>
+				<div class="flex-container">
+					<button class="button primary" id="send-button" onclick="writeFile('test')">
+						Request certificate
+					</button>
+					<button class="button" style="background-color:red; color:white;" id="clear-log">
+						Clear
+					</button>
+				</div>
+			</div>
+		</div>
+	 </div>
+	 <script src="assets/js/popup.js"></script>
+	</body>
+</html>
