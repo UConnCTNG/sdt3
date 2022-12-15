@@ -7,6 +7,17 @@ class Client {
         this.context = context;
         this.query = query;
         this.crypto = crypto;
+        this.db = null;
+    }
+
+    // write a function to open up an SQLite file and load it into an object
+    async loadDb() {
+        // 
+    }
+
+    // write a function to save data into an SQLite file
+    async saveDb() {
+        // 
     }
 
     // #region helpers
@@ -24,7 +35,38 @@ class Client {
         this.config = JSON.parse(jsonData);
         console.log(this.crypto)
     }
-      
+
+    async periodicTasks() {
+    	// Immediately queue up the next task to run at the next MMD.
+    	// queues up the next task irrespective of the rest of the function
+    	function queueTask() {
+      	periodicTasks();
+    	}
+    	setTimeout(queueTask, this.config.MMD * 1000);
+    	// Run the periodic tasks through the UpdateMonitor API.
+    	UpdateMonitor.queryMonitors(this.context);
+    }
+
+    async startClientServer() {
+        this.context.lastUpdatePeriod = "0";
+        let tr = {};
+        c.Client = {
+          Transport: tr,
+        };
+        // Start a periodic loop to perform tasks every period
+        periodicTasks();
+        // Start an HTTP server loop to listen and handle requests
+        handleClientRequests(c);
+    }
+    
+    async postRequest(URL) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", URL, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+            value: value
+        }));
+    }
 
 
     // #endregion
