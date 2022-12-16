@@ -1,5 +1,24 @@
 // write the client class with all its important structs
 
+document.getElementById("send-button").addEventListener("click", loadDb());
+
+function test() {
+    console.log("test")
+}
+
+function loadDb() {
+    // let k1 = "cert";
+    // let value = "CERT1EXAMPLE";
+    // chrome.storage.local.set({ k1: value }).then(() => {
+    //     console.log("Certificate is: " + value);
+    // });
+    chrome.storage.local.clear();
+
+    chrome.storage.local.get(["key"]).then((result) => {
+        console.log("Value currently is " + result.key);
+      });
+}
+
 class Client {
 
     constructor(config = {}, context = {}, query = {}, crypto = {}) {
@@ -7,18 +26,20 @@ class Client {
         this.context = context;
         this.query = query;
         this.crypto = crypto;
-        this.db = null;
+        this.db = db;
     }
 
     // write a function to open up an SQLite file and load it into an object
     async loadDb() {
-        // 
+        const sqlite3 = require('sqlite3');
+        const db = new sqlite3.Database('../../db/database.db');
+        console.log(db.get("SELECT * FROM database"));
     }
 
     // write a function to save data into an SQLite file
-    async saveDb() {
-        // 
-    }
+    // async saveDb() {
+    //     // 
+    // }
 
     // #region helpers
 
@@ -27,7 +48,7 @@ class Client {
         const jsonConfig = await response.text();
         this.config = JSON.parse(jsonData);
       
-        // Show config in log
+        // Show config in log 
         console.log(this.config);
 
         cryptoResponse = await fetch(cryptopath);
